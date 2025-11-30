@@ -715,7 +715,24 @@ public class Helpers
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
 			if (isTinkers) {
+				double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
+				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
+
+				try {
+					java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
+					field.setAccessible(true);
+					int currentValue = field.getInt((EntityLivingBase)player);
+					field.setInt(player, 100);
+				} catch (NoSuchFieldException e) {
+					System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
+				} catch (IllegalAccessException e) {
+					System.out.println("[Better Combat] Could not access ticksSinceLastSwing field: " + e.getMessage());
+				}
+
 				attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, bodyPart, null, false);
+
+				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
+
 				return attacked;
 			} else {
 				attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage);
@@ -726,13 +743,13 @@ public class Helpers
 				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
 
 				try {
-				java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
-				field.setAccessible(true);
-				int currentValue = field.getInt((EntityLivingBase)player);
-				field.setInt(player, 100);
-			} catch (NoSuchFieldException e) {
-				System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
-			} catch (IllegalAccessException e) {
+					java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
+					field.setAccessible(true);
+					int currentValue = field.getInt((EntityLivingBase)player);
+					field.setInt(player, 100);
+				} catch (NoSuchFieldException e) {
+					System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
+				} catch (IllegalAccessException e) {
 					System.out.println("[Better Combat] Could not access ticksSinceLastSwing field: " + e.getMessage());
                 }
 
