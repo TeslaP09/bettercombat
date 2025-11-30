@@ -707,43 +707,55 @@ public class Helpers
 	/* Returns true if the player successfully attacked the victim */
 	private static boolean playerAttackedVictim(EntityPlayer player, EntityLivingBase victim, @Nullable MultiPartEntityPart bodyPart, float damage, ItemStack itemStack)
 	{
-		victim.hurtResistantTime = 0;
-		
 		boolean attacked = false;
 		Item item = itemStack.getItem();
-
+		ToolCore tinkersTool = (ToolCore) item;
+		boolean isTinkers = (Loader.isModLoaded("tconstruct") && ((item instanceof ToolCore)));
 		
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
-			if (Loader.isModLoaded("tconstruct") && (item instanceof AoeToolCore) || (item instanceof SwordCore)) {
-				attacked = ToolHelper.attackEntity(itemStack, (ToolCore)(itemStack.getItem()), player, bodyPart, null, false);
-				//attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage); //fallback... fix this pls...
+			if (isTinkers) {
+				attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, bodyPart, null, false);
+				return attacked;
 			} else {
 				attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage);
 			}
-		}
-		
-		if ( !attacked )
-		{
-			if (Loader.isModLoaded("tconstruct") && (item instanceof AoeToolCore) || (item instanceof SwordCore)) {
-				attacked = ToolHelper.attackEntity(itemStack, (ToolCore)(itemStack.getItem()), player, victim, null, false);
+		} else {
+			if (isTinkers) { // MODIFIED FOR TESTING
+				double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
+				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
+
+				try {
+				java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
+				field.setAccessible(true);
+				int currentValue = field.getInt((EntityLivingBase)player);
+				field.setInt(player, 100);
+			} catch (NoSuchFieldException e) {
+				System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
+			} catch (IllegalAccessException e) {
+					System.out.println("[Better Combat] Could not access ticksSinceLastSwing field: " + e.getMessage());
+                }
+
+                attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, victim, player, false);
+
+				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
+
+				return attacked;
 			} else {
 				attacked = victim.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
 			}
 		}
-		
-		if ( victim.hitByEntity(player) )
-		{
-			attacked = true;
-		}
-		
-		if ( attacked )
-		{
-			player.setLastAttackedEntity(victim);
-			victim.hurtResistantTime = 0;
-		}
-		
-		return attacked;
+
+        if (victim.hitByEntity(player)) {
+            attacked = true;
+        }
+
+        if (attacked) {
+            player.setLastAttackedEntity(victim);
+            victim.hurtResistantTime = 0;
+        }
+
+        return attacked;
 	}
 
 	private static boolean playerAttackVictimWithShield( EntityPlayer player, Entity entity, ItemShield shield )
