@@ -709,8 +709,8 @@ public class Helpers
 	{
 		boolean attacked = false;
 		Item item = itemStack.getItem();
-		ToolCore tinkersTool = (ToolCore) item;
 		boolean isTinkers = (Loader.isModLoaded("tconstruct") && ((item instanceof ToolCore)));
+		ToolCore tinkersTool = isTinkers ? (ToolCore) item : null;
 		
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
