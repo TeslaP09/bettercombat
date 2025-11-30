@@ -716,8 +716,8 @@ public class Helpers
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
 			if (Loader.isModLoaded("tconstruct") && (item instanceof AoeToolCore) || (item instanceof SwordCore)) {
-				//attacked = ToolHelper.attackEntity(itemStack, (ToolCore)(itemStack.getItem()), player, victim, null, false);
-				attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage); //fallback... fix this pls...
+				attacked = ToolHelper.attackEntity(itemStack, (ToolCore)(itemStack.getItem()), player, bodyPart, null, false);
+				//attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage); //fallback... fix this pls...
 			} else {
 				attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage);
 			}
