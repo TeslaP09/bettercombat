@@ -715,8 +715,8 @@ public class Helpers
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
 			if (isTinkers) {
-				double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
+				//double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
+				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
 
 				try {
 					java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
@@ -731,7 +731,7 @@ public class Helpers
 
 				attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, bodyPart, null, false);
 
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
+				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
 
 				return attacked;
 			} else {
@@ -739,8 +739,8 @@ public class Helpers
 			}
 		} else {
 			if (isTinkers) { // MODIFIED FOR TESTING
-				double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
+				//double originalBaseDamage = player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
+				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
 
 				try {
 					java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
@@ -755,7 +755,7 @@ public class Helpers
 
                 attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, victim, player, false);
 
-				player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
+				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
 
 				return attacked;
 			} else {
