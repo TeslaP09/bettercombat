@@ -730,6 +730,9 @@ public class Helpers
 				}
 
 				attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, bodyPart, null, false);
+				if (attacked) {
+					itemStack.damageItem(1, player);
+				}
 
 				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
 
@@ -754,6 +757,9 @@ public class Helpers
                 }
 
                 attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, victim, player, false);
+				if (attacked) {
+					itemStack.damageItem(1, player);
+				}
 
 				//player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(originalBaseDamage);
 
