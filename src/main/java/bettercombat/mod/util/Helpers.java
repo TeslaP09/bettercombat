@@ -1,35 +1,14 @@
 package bettercombat.mod.util;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import javax.annotation.Nullable;
-
 import bettercombat.mod.client.ClientProxy;
 import bettercombat.mod.client.SoundHandler;
 import bettercombat.mod.network.PacketHandler;
 import bettercombat.mod.network.server.PacketParrying;
 import bettercombat.mod.server.EventHandlers;
-import bettercombat.mod.util.ConfigurationHandler.Animation;
-import bettercombat.mod.util.ConfigurationHandler.ConfigWeapon;
-import bettercombat.mod.util.ConfigurationHandler.ConfigWeaponPotionEffect;
-import bettercombat.mod.util.ConfigurationHandler.CustomAxe;
-import bettercombat.mod.util.ConfigurationHandler.CustomShield;
-import bettercombat.mod.util.ConfigurationHandler.SoundType;
+import bettercombat.mod.util.ConfigurationHandler.*;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.IEntityMultiPart;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.IMob;
@@ -51,8 +30,19 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import slimeknights.tconstruct.library.tools.ToolCore;
+import slimeknights.tconstruct.library.utils.ToolHelper;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Helpers
 {
@@ -482,7 +472,7 @@ public class Helpers
 		
 		player.addExhaustion(0.1F);
 				
-		if ( playerAttackedVictim(player, victim, bodyPart, (float)damage) )
+		if ( playerAttackedVictim(player, victim, bodyPart, (float)damage, weapon) )
 		{
 			SoundHandler.playImpactSound(player, mainhand, soundType, animation, isMetal);
 			
@@ -557,7 +547,7 @@ public class Helpers
 
 						sweepDamage = MathHelper.clamp(damage * (sweepAmount / 4.0D), ConfigurationHandler.baseAttackDamage, damage);
 						
-						if ( playerAttackedVictim(player, sweepVictim, null, (float)sweepDamage) )
+						if ( playerAttackedVictim(player, sweepVictim, null, (float)sweepDamage, weapon) )
 						{
 							sweepVictim.knockBack(player, (float)(0.5D * knockbackMod * MathHelper.clamp((4.0D + sweepAmount) / 8.0D, 0.5D, 1.0D)), MathHelper.sin(player.rotationYaw * 0.017453292F), -MathHelper.cos(player.rotationYaw * 0.017453292F));
 							
@@ -713,34 +703,76 @@ public class Helpers
 	}
 
 	/* Returns true if the player successfully attacked the victim */
-	private static boolean playerAttackedVictim(EntityPlayer player, EntityLivingBase victim, @Nullable MultiPartEntityPart bodyPart, float damage)
+	private static boolean playerAttackedVictim(EntityPlayer player, EntityLivingBase victim, @Nullable MultiPartEntityPart bodyPart, float damage, ItemStack itemStack)
 	{
-		victim.hurtResistantTime = 0;
-		
 		boolean attacked = false;
+		Item item = itemStack.getItem();
+
+		boolean isTinkers = (Loader.isModLoaded("tconstruct") && ((item instanceof ToolCore)));
+		ToolCore tinkersTool = isTinkers ? (ToolCore) item : null;
 		
 		if ( bodyPart != null && victim instanceof IEntityMultiPart )
 		{
-			attacked = ((IEntityMultiPart)victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage);
+			if (isTinkers) {
+
+				try {
+					java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
+					field.setAccessible(true);
+					int currentValue = field.getInt((EntityLivingBase)player);
+					field.setInt(player, 100);
+				} catch (NoSuchFieldException e) {
+					System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
+				} catch (IllegalAccessException e) {
+					System.out.println("[Better Combat] Could not access ticksSinceLastSwing field: " + e.getMessage());
+				}
+
+
+				attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, bodyPart, null, false);
+
+				if (attacked) {
+					itemStack.damageItem(1, player);
+				}
+
+				return attacked;
+			} else {
+				attacked = ((IEntityMultiPart) victim).attackEntityFromPart(bodyPart, DamageSource.causePlayerDamage(player), damage);
+			}
+		} else {
+			if (isTinkers) {
+
+				try {
+				java.lang.reflect.Field field = EntityLivingBase.class.getDeclaredField("field_184617_aD");
+				field.setAccessible(true);
+				int currentValue = field.getInt((EntityLivingBase)player);
+				field.setInt(player, 100);
+			} catch (NoSuchFieldException e) {
+				System.out.println("[Better Combat] Could not find ticksSinceLastSwing field: " + e.getMessage());
+			} catch (IllegalAccessException e) {
+					System.out.println("[Better Combat] Could not access ticksSinceLastSwing field: " + e.getMessage());
+                }
+
+                attacked = ToolHelper.attackEntity(itemStack, tinkersTool, player, victim, player, false);
+
+				if (attacked) {
+					itemStack.damageItem(1, player);
+				}
+
+				return attacked; 
+			} else {
+				attacked = victim.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
+			}
 		}
 		
-		if ( !attacked )
-		{
-			attacked = victim.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-		}
-		
-		if ( victim.hitByEntity(player) )
-		{
-			attacked = true;
-		}
-		
-		if ( attacked )
-		{
-			player.setLastAttackedEntity(victim);
-			victim.hurtResistantTime = 0;
-		}
-		
-		return attacked;
+		if (victim.hitByEntity(player)) {
+            attacked = true;
+        }
+
+        if (attacked) {
+            player.setLastAttackedEntity(victim);
+            victim.hurtResistantTime = 0;
+        }
+
+        return attacked;
 	}
 
 	private static boolean playerAttackVictimWithShield( EntityPlayer player, Entity entity, ItemShield shield )
@@ -852,7 +884,7 @@ public class Helpers
 		
 		player.addExhaustion(0.1F);
 				
-		if ( playerAttackedVictim(player, victim, bodyPart, (float)damage) )
+		if ( playerAttackedVictim(player, victim, bodyPart, (float)damage, new ItemStack(shield)) )
 		{
 			if ( isMetalRegistryName(getRegistryNameFromItem(shield)) )
 			{
