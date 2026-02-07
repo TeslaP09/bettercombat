@@ -4,7 +4,7 @@ Implementation-Version: 1.1.0
 FMLCorePluginContainsFMLMod: true
 Specification-Vendor: bettercombat
 Specification-Title: bettercombat
-Implementation-Timestamp: 2026-02-07T15:09:03+0100
+Implementation-Timestamp: 2026-02-07T16:01:38+0100
 FMLCorePlugin: com.bettercombat.util.asm.CustomASMTransformer
 Specification-Version: 1
 Implementation-Vendor: bettercombat
