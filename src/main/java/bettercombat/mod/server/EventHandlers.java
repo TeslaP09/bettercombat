@@ -760,7 +760,9 @@ public class EventHandlers
 					{
 						event.setAmount(damage - hunger - saturation);
 						player.getFoodStats().setFoodLevel(0);
-						player.getFoodStats().setFoodSaturationLevel(0.0F);
+						if (player.world.isRemote) {
+							player.getFoodStats().setFoodSaturationLevel(0.0F);
+						}
 					}
 					else
 					{
@@ -778,7 +780,9 @@ public class EventHandlers
 
 						event.setAmount(0.0F);
 						player.getFoodStats().setFoodLevel(hunger);
-						player.getFoodStats().setFoodSaturationLevel(saturation);
+						if (player.world.isRemote) {
+							player.getFoodStats().setFoodSaturationLevel(saturation);
+						}
 					}
 				}
 			}

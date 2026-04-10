@@ -1,4 +1,4 @@
-Args: "--in-jar", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\libs\immersivecombat-1.1.0.jar", "--out-jar", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\reobfJar\output.jar", "--srg-in", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\createMcpToSrg\output.tsrg", "--live"
+Args: "--in-jar", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\libs\immersivecombat-1.1.1.jar", "--out-jar", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\reobfJar\output.jar", "--srg-in", "C:\Users\Gerben\Documents\GitHub\bettercombat\build\createMcpToSrg\output.tsrg", "--live"
 Classpath: C:\Users\Gerben\.gradle\caches\forge_gradle\maven_downloader\net\md-5\SpecialSource\1.8.3\SpecialSource-1.8.3-shaded.jar
 Classpath: C:\Users\Gerben\.gradle\caches\modules-2\files-2.1\curse.maven\feathers-442962\3343308\2ba93ebb2ddf646e8cb70eaf31a0e5db1f5fb8da\feathers-442962-3343308.jar
 Classpath: C:\Users\Gerben\.gradle\caches\modules-2\files-2.1\curse.maven\tinkers-antique-1242239\7339332\84f3dc7d5e141e9647596a826113524d5eecb48d\tinkers-antique-1242239-7339332.jar

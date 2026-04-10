@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Implementation-Title: bettercombat
-Implementation-Version: 1.1.0
+Implementation-Version: 1.1.1
 FMLCorePluginContainsFMLMod: true
 Specification-Vendor: bettercombat
 Specification-Title: bettercombat
-Implementation-Timestamp: 2026-02-07T16:01:38+0100
+Implementation-Timestamp: 2026-04-10T14:45:37+0200
 FMLCorePlugin: com.bettercombat.util.asm.CustomASMTransformer
 Specification-Version: 1
 Implementation-Vendor: bettercombat
